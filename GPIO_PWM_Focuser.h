@@ -50,6 +50,8 @@ class GPIO_PWM_Focuser : public INDI::Focuser
         virtual bool ISNewNumber (const char *dev, const char *name, double values[], char *names[], int n) override;
         virtual bool SetFocuserSpeed(int speed) override;
         virtual bool ISNewSwitch (const char *dev, const char *name, ISState *states, char *names[], int n) override;
+        virtual bool Connect() override;
+        virtual bool Disconnect() override;
 
     protected:
         //virtual bool Handshake() override;
@@ -71,11 +73,17 @@ class GPIO_PWM_Focuser : public INDI::Focuser
 
 //        ISwitch StatusS[3];
 //        ISwitchVectorProperty StatusSP;
-        INumber GPIO_pwm_pin_num;
-        INumber GPIO_A01_pin_num;
-        INumber GPIO_A02_pin_num;
-        INumber GPIO_Enable_pin_num;
-        INumber FocuserSpeed;
+//        INumber GPIO_pwm_pin_num;
+//        INumber GPIO_A01_pin_num;
+//        INumber GPIO_A02_pin_num;
+//        INumber GPIO_Enable_pin_num;
+//        INumber FocuserSpeed;
+
+        INumber gpioN[4];
+        INumberVectorProperty gpioNP;
+
+//        INumber FocuserN[1];
+//        INumberVectorProperty FocuserNP;
 
         //INumber SetBacklashN[1];
         //INumberVectorProperty SetBacklashNP;
@@ -94,18 +102,18 @@ class GPIO_PWM_Focuser : public INDI::Focuser
 //        bool setPark();
 
        // Variables
-        int speed;
-        int PWM_Pin;
-        int A01_Pin;
-        int A02_Pin;
-        int EN_Pin;
+            int PWMPinNum;
+            int A01PinNum;
+            int A02PinNum;
+            int EnablePinNum;
+            int speed;
 
 //        float currentTemperature;
 //        float currentHumidity;
 //        int32_t currentPosition;
 //        int32_t currentMaxPosition;
 //        bool isAbsolute;
-//        bool isMoving;
+        bool isMoving;
 //        unsigned char isParked;
 //        bool isVcc12V;
 //        GPIO_PWM_FocuserCommand currentResponse;

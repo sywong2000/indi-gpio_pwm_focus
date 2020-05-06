@@ -130,13 +130,19 @@ bool GPIO_PWM_Focuser::initProperties()
     gpioN[3].max=40;
     gpioN[3].step=1;
 
+    gpioN[4].value = 26;
+    gpioN[4].min=0;
+    gpioN[4].max=40;
+    gpioN[4].step=1;
+
 
 
     IUFillNumber(&gpioN[0],"GPIOPWMPIN","PWM Pin Number","%2.0f",0,40,1,5);
     IUFillNumber(&gpioN[1],"GPIOA01PIN","INA1 Pin Number","%2.0f",0,40,1,6);
     IUFillNumber(&gpioN[2],"GPIOA02PIN","INA2 Pin Number","%2.0f",0,40,1,13);
     IUFillNumber(&gpioN[3],"GPIOENABLEPIN","Enable Pin Number","%2.0f",0,40,1,19);
-    IUFillNumberVector(&gpioNP, gpioN,4,getDeviceName(),"GPIO_SETTINGS","GPIO Pins Settings", COMMUNICATION_TAB, IP_RW,20, IPS_IDLE);
+    IUFillNumber(&gpioN[4],"33VPIN","3.3V Supply Pin Number","%2.0f",0,40,1,26);
+    IUFillNumberVector(&gpioNP, gpioN,5,getDeviceName(),"GPIO_SETTINGS","GPIO Pins Settings", COMMUNICATION_TAB, IP_RW,20, IPS_IDLE);
 
     //IUFillNumber(&FocuserN[0],"FOCUSERSPEED","Speed","%.f",0,127,1,50);
     //IUFillNumberVector(&FocuserNP, FocuserN,1,getDeviceName(),"FOCUSER_SPEED","Focuser Speed", MAIN_CONTROL_TAB, IP_RW, 0, IPS_IDLE);
@@ -246,6 +252,7 @@ bool GPIO_PWM_Focuser::saveConfigItems(FILE *fp)
     INDI::Focuser::saveConfigItems(fp);
 
     IUSaveConfigNumber(fp,&gpioNP);
+    //IUSaveConfigSwitch(fp,&gpioFeed33vSP);
     //IUSaveConfigNumber(fp,&FocuserNP);
 
 //    IUSaveConfigNumber(fp, &GPIO_pwm_pin_num);
@@ -332,6 +339,14 @@ bool GPIO_PWM_Focuser::SetFocuserSpeed(int speed)
 bool GPIO_PWM_Focuser::ISNewSwitch (const char *dev, const char *name, ISState *states, char *names[], int n)
 {
 //    if(strcmp(dev, getDeviceName()) == 0)
+//    {
+//        if (strcmp(gpioFeed33vSP.name,name)==0)
+//        {
+//            IUUpdateSwitch(&gpioFeed33vSP,states,names,n);
+//            IDSetSwitch(&gpioFeed33vSP, nullptr);
+//            gpioFeed33vSP.s = IPS_OK;
+//        }
+//    }
 //    {
         // Park
 //        if (!strcmp(ParkSP.name, name))
@@ -504,15 +519,16 @@ IPState GPIO_PWM_Focuser::MoveFocuser(FocusDirection dir, int speed, uint16_t du
     }
     LOG_INFO("Moving Focuser.... ");
     unsigned int a01, a02;
+
     if (dir==FOCUS_INWARD)
     {
-        a01 = PI_LOW;
-        a02 = PI_HIGH;
+        a01 = isReversed?PI_HIGH:PI_LOW;
+        a02 = isReversed?PI_LOW:PI_HIGH;
     }
     else
     {
-        a01 = PI_HIGH;
-        a02 = PI_LOW;
+        a01 = isReversed?PI_LOW:PI_HIGH;
+        a02 = isReversed?PI_HIGH:PI_LOW;
     }
 
     LOGF_DEBUG("Write on Speed pin # %f with speed %d",gpioN[0].value, speed);
@@ -892,14 +908,39 @@ bool GPIO_PWM_Focuser::Connect()
 {
     gpioInitialise();
     LOG_INFO("Connected successfully!");
+
+    // if the 3.3v pin settings is not 0 then switch on the circuit
+    if (gpioN[4].value >0)
+    {
+        gpioSetMode(gpioN[4].value,PI_OUTPUT);
+        gpioWrite(gpioN[4].value,PI_HIGH);
+    }
+
+
     return true;
 }
+
 
 bool GPIO_PWM_Focuser::Disconnect()
 {
     AbortFocuser();
+
+    // if the 3.3v pin settings is not 0 then switch on the circuit
+    if (gpioN[4].value >0)
+    {
+        gpioSetMode(gpioN[4].value,PI_OUTPUT);
+        gpioWrite(gpioN[4].value,PI_LOW);
+    }
+
     gpioTerminate();
     LOG_INFO("Device Disconnected. Bye!");
     return true;
 }
 
+
+bool GPIO_PWM_Focuser::ReverseFocuser(bool enabled)
+{
+    isReversed = enabled;
+    return true;
+
+}

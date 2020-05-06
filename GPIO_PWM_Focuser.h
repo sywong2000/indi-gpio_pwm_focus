@@ -62,6 +62,8 @@ class GPIO_PWM_Focuser : public INDI::Focuser
 //        virtual IPState MoveRelFocuser(FocusDirection dir, uint32_t ticks) override;
         virtual IPState MoveFocuser(FocusDirection dir, int speed, uint16_t duration) override;
         virtual bool AbortFocuser() override;
+        virtual bool ReverseFocuser(bool enabled) override;
+
 
     private:
 
@@ -79,8 +81,13 @@ class GPIO_PWM_Focuser : public INDI::Focuser
 //        INumber GPIO_Enable_pin_num;
 //        INumber FocuserSpeed;
 
-        INumber gpioN[4];
+        INumber gpioN[5];
         INumberVectorProperty gpioNP;
+        bool isReversed;
+
+//        ISwitch gpioFeed33vS[1];
+//        ISwitchVectorProperty gpioFeed33vSP;
+//        enum { GPIO_FEED_33V_YES, GPIO_FEED_33V_NO};
 
 //        INumber FocuserN[1];
 //        INumberVectorProperty FocuserNP;
@@ -102,11 +109,11 @@ class GPIO_PWM_Focuser : public INDI::Focuser
 //        bool setPark();
 
        // Variables
-            int PWMPinNum;
-            int A01PinNum;
-            int A02PinNum;
-            int EnablePinNum;
-            int speed;
+//            int PWMPinNum;
+//            int A01PinNum;
+//            int A02PinNum;
+//            int EnablePinNum;
+//            int speed;
 
 //        float currentTemperature;
 //        float currentHumidity;

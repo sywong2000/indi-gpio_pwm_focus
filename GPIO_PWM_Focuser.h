@@ -27,7 +27,7 @@
 #include <indidevapi.h>
 #include <indicom.h>
 #include <indifocuser.h>
-#include <pigpio.h>
+#include <pigpiod_if2.h>
 
 
 using namespace std;
@@ -54,12 +54,6 @@ class GPIO_PWM_Focuser : public INDI::Focuser
         virtual bool Disconnect() override;
 
     protected:
-        //virtual bool Handshake() override;
-        //virtual void TimerHit() override;
-//        virtual bool SyncFocuser(uint32_t ticks) override;
-
-//        virtual IPState MoveAbsFocuser(uint32_t ticks) override;
-//        virtual IPState MoveRelFocuser(FocusDirection dir, uint32_t ticks) override;
         virtual IPState MoveFocuser(FocusDirection dir, int speed, uint16_t duration) override;
         virtual bool AbortFocuser() override;
         virtual bool ReverseFocuser(bool enabled) override;
@@ -67,63 +61,11 @@ class GPIO_PWM_Focuser : public INDI::Focuser
 
     private:
 
-//        INumber WeatherN[3];
-//        INumberVectorProperty WeatherNP;
-
-//        ISwitch ParkS[2];
-//        ISwitchVectorProperty ParkSP;
-
-//        ISwitch StatusS[3];
-//        ISwitchVectorProperty StatusSP;
-//        INumber GPIO_pwm_pin_num;
-//        INumber GPIO_A01_pin_num;
-//        INumber GPIO_A02_pin_num;
-//        INumber GPIO_Enable_pin_num;
-//        INumber FocuserSpeed;
-
         INumber gpioN[5];
         INumberVectorProperty gpioNP;
         bool isReversed;
-
-//        ISwitch gpioFeed33vS[1];
-//        ISwitchVectorProperty gpioFeed33vSP;
-//        enum { GPIO_FEED_33V_YES, GPIO_FEED_33V_NO};
-
-//        INumber FocuserN[1];
-//        INumberVectorProperty FocuserNP;
-
-        //INumber SetBacklashN[1];
-        //INumberVectorProperty SetBacklashNP;
-
-//        unsigned char calculate_checksum(GPIO_PWM_FocuserCommand c);
-//        bool send_command(char k, uint32_t l = 0, unsigned char addr = 0);
-//        bool read_response();
-//        bool dispatch_command(char k, uint32_t l = 0, unsigned char addr = 0);
-
-//        bool getTemperature();
-//        bool getStatus();
-//        bool getPosition();
-//        bool getMaxPosition();
-//        bool setPosition(int32_t position);
-//        bool setSync(uint32_t position = 0);
-//        bool setPark();
-
-       // Variables
-//            int PWMPinNum;
-//            int A01PinNum;
-//            int A02PinNum;
-//            int EnablePinNum;
-//            int speed;
-
-//        float currentTemperature;
-//        float currentHumidity;
-//        int32_t currentPosition;
-//        int32_t currentMaxPosition;
-//        bool isAbsolute;
         bool isMoving;
-//        unsigned char isParked;
-//        bool isVcc12V;
-//        GPIO_PWM_FocuserCommand currentResponse;
+        int pi_gpio;
 };
 
 #endif

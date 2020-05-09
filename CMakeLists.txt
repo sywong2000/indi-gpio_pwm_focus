@@ -12,7 +12,7 @@ set (GPIO_PWM_VERSION_MINOR 1)
 find_package(INDI REQUIRED)
 find_package(Threads REQUIRED)
 
-find_library(pigpio REQUIRED)
+find_library(pigpiod_if2 REQUIRED)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/indi_gpio_pwm_focus.xml.cmake ${CMAKE_CURRENT_BINARY_DIR}/indi_gpio_pwm_focus.xml)
@@ -34,7 +34,7 @@ ENDIF ()
 
 add_executable(indi_gpio_pwm_focus ${indigpio_pwm_SRCS})
 
-target_link_libraries(indi_gpio_pwm_focus ${INDI_DRIVER_LIBRARIES} pigpio pthread)
+target_link_libraries(indi_gpio_pwm_focus ${INDI_DRIVER_LIBRARIES} pigpiod_if2 pthread)
 
 install(TARGETS indi_gpio_pwm_focus RUNTIME DESTINATION bin )
 
